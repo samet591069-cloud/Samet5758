@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Basit Savaş Oyunu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #eee;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .log {
+            margin-top: 20px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+<h1>⚔️ Savaş Oyunu</h1>
+<button onclick="startGame()">Oyunu Başlat</button>
+
+<div class="log" id="log"></div>
+
+<script>
+class Player {
+    constructor(name) {
+        this.name = name;
+        this.hp = 100;
+        this.alive = true;
+    }
+
+    shoot(target) {
+        if (!this.alive) return "";
+
+        const damage = Math.floor(Math.random() * 21) + 10;
+        target.hp -= damage;
+        if (target.hp < 0) target.hp = 0;
+
+        let text = `${this.name} ➜ ${target.name} vurdu | Hasar: ${damage} | Kalan HP: ${target.hp}\n`;
+
+        if (target.hp === 0) {
+            target.alive = false;
+            text += `💀 ${target.name} öldü!\n`;
+        }
+        return text;
+    }
+}
+
+function startGame() {
+    const logDiv = document.getElementById("log");
+    logDiv.textContent = "";
+
+    const player1 = new Player("Oyuncu1");
+    const player2 = new Player("Oyuncu2");
+
+    let round = 1;
+
+    while (player1.alive && player2.alive) {
+        logDiv.textContent += `\n🔄 Tur ${round}\n`;
+        logDiv.textContent += player1.shoot(player2);
+
+        if (player2.alive) {
+            logDiv.textContent += player2.shoot(player1);
+        }
+        round++;
+    }
+
+    logDiv.textContent += "\n🏆 Oyun bitti\n";
+    logDiv.textContent += player1.alive ? "Kazanan: Oyuncu
