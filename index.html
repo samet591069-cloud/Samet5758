@@ -1,76 +1,102 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <title>Basit Savaş Oyunu</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: #eee;
-            padding: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .log {
-            margin-top: 20px;
-            white-space: pre-line;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Mini Clash Royale</title>
+<style>
+    body {
+        background:#1e1e1e;
+        color:white;
+        font-family:Arial;
+        text-align:center;
+    }
+    .arena {
+        display:flex;
+        justify-content:space-around;
+        margin-top:30px;
+    }
+    .tower {
+        width:150px;
+        height:200px;
+        background:#444;
+        border:3px solid #888;
+        padding-top:20px;
+    }
+    button {
+        margin:10px;
+        padding:10px 20px;
+        font-size:16px;
+        cursor:pointer;
+    }
+    #log {
+        margin-top:20px;
+        white-space:pre-line;
+        font-size:14px;
+    }
+</style>
 </head>
 <body>
 
-<h1>⚔️ Savaş Oyunu</h1>
-<button onclick="startGame()">Oyunu Başlat</button>
+<h1>🏰 Mini Clash Royale</h1>
 
-<div class="log" id="log"></div>
+<div class="arena">
+    <div class="tower">
+        <h3>Oyuncu Kulesi</h3>
+        <p id="playerHp">HP: 500</p>
+    </div>
+
+    <div class="tower">
+        <h3>Bot Kulesi</h3>
+        <p id="botHp">HP: 500</p>
+    </div>
+</div>
+
+<h2>🃏 Kartlar</h2>
+<button onclick="playCard(30)">Asker (30)</button>
+<button onclick="playCard(60)">Güçlü Asker (60)</button>
+
+<div id="log"></div>
 
 <script>
-class Player {
-    constructor(name) {
-        this.name = name;
-        this.hp = 100;
-        this.alive = true;
-    }
+let playerTower = 500;
+let botTower = 500;
+let log = document.getElementById("log");
 
-    shoot(target) {
-        if (!this.alive) return "";
-
-        const damage = Math.floor(Math.random() * 21) + 10;
-        target.hp -= damage;
-        if (target.hp < 0) target.hp = 0;
-
-        let text = `${this.name} ➜ ${target.name} vurdu | Hasar: ${damage} | Kalan HP: ${target.hp}\n`;
-
-        if (target.hp === 0) {
-            target.alive = false;
-            text += `💀 ${target.name} öldü!\n`;
-        }
-        return text;
-    }
+function updateHP() {
+    document.getElementById("playerHp").textContent = "HP: " + playerTower;
+    document.getElementById("botHp").textContent = "HP: " + botTower;
 }
 
-function startGame() {
-    const logDiv = document.getElementById("log");
-    logDiv.textContent = "";
+function playCard(damage) {
+    if (botTower <= 0 || playerTower <= 0) return;
 
-    const player1 = new Player("Oyuncu1");
-    const player2 = new Player("Oyuncu2");
+    botTower -= damage;
+    if (botTower < 0) botTower = 0;
 
-    let round = 1;
+    log.textContent += `🟦 Oyuncu saldırdı ➜ ${damage} hasar\n`;
+    updateHP();
 
-    while (player1.alive && player2.alive) {
-        logDiv.textContent += `\n🔄 Tur ${round}\n`;
-        logDiv.textContent += player1.shoot(player2);
-
-        if (player2.alive) {
-            logDiv.textContent += player2.shoot(player1);
-        }
-        round++;
+    if (botTower === 0) {
+        log.textContent += "🏆 Kazandın!\n";
+        return;
     }
 
-    logDiv.textContent += "\n🏆 Oyun bitti\n";
-    logDiv.textContent += player1.alive ? "Kazanan: Oyuncu
+    setTimeout(botAttack, 1000);
+}
+
+function botAttack() {
+    let damage = Math.floor(Math.random() * 40) + 20;
+    playerTower -= damage;
+    if (playerTower < 0) playerTower = 0;
+
+    log.textContent += `🟥 Bot saldırdı ➜ ${damage} hasar\n`;
+    updateHP();
+
+    if (playerTower === 0) {
+        log.textContent += "💀 Kaybettin!\n";
+    }
+}
+</script>
+
+</body>
+</html>
